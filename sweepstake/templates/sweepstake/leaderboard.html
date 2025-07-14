@@ -172,8 +172,8 @@
             </tr>
             <tr class="dropdown-content">
                 <td colspan="4">
-                    <div class="dropdown-details" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 2em;">
-                        <div>
+                    <div class="dropdown-details" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 3em;">
+                        <div style="text-align: left;">
                             <strong>Picks:</strong>
                             <ul>
                             {% for pick in item.entry.picks %}
@@ -181,7 +181,7 @@
                             {% endfor %}
                             </ul>
                         </div>
-                        <div style="min-width: 120px; text-align: right;">
+                        <div style="min-width: 120px; text-align: left;">
                             <strong>Combined Odds:</strong><br>
                             {{ item.combined_odds }}
                         </div>
