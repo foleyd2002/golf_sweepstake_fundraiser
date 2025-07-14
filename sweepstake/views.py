@@ -42,15 +42,15 @@ def leaderboard(request):
             for pick in picks:
                 try:
                     num, denom = map(int, pick.player.odds.replace(' ', '').split('/'))
-                    decimal_odds = num / denom + 1  # Convert to decimal odds
-                    odds_values.append(decimal_odds)
+                    fractional_odds = num / denom  # Just the fractional part
+                    odds_values.append(fractional_odds)
                 except Exception:
                     odds_values.append(1)  # Fallback: evens
             if len(odds_values) == 3:
-                combined_decimal = sum(odds_values)
-                x = round(combined_decimal, 2)
+                combined_fractional = sum(odds_values)
+                x = round(combined_fractional, 2)
                 combined_odds = f"{x}/1"
-                combined_odds_val = combined_decimal
+                combined_odds_val = combined_fractional
             else:
                 combined_odds = "-"
                 combined_odds_val = 0
