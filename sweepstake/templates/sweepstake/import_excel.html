@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Import Excel - Golf Sweepstake</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .center { text-align: center; }
+        form { margin: 2em auto; width: 400px; padding: 2em; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; }
+    </style>
+</head>
+<body>
+    <h1 class="center">Import Contestants from Excel</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="excel_file">Select Excel file (.xlsx):</label><br><br>
+        <input type="file" name="excel_file" accept=".xlsx" required><br><br>
+        <button type="submit">Import</button>
+    </form>
+    <div class="center" style="margin-top: 2em;">
+        <a href="{% url 'leaderboard' %}">Back to Leaderboard</a>
+    </div>
+    {% if messages %}
+        <ul class="center">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html> 

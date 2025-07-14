@@ -1,0 +1,251 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Golf Sweepstake Leaderboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 2em auto 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(200,0,0,0.08);
+            padding: 2em 2em 1em 2em;
+        }
+        .logo {
+            text-align:center; margin-bottom: 1em;
+        }
+        .logo img {
+            height: 90px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(200,0,0,0.10);
+            background: #fff;
+            padding: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #b30000;
+            margin-bottom: 1.5em;
+            letter-spacing: 1px;
+        }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(200,0,0,0.06);
+        }
+        th, td {
+            padding: 1em 0.5em;
+            text-align: center;
+        }
+        th {
+            background: #b30000;
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-bottom: 3px solid #fff;
+        }
+        tr {
+            background: #fff;
+            transition: background 0.2s;
+        }
+        tr:nth-child(even) {
+            background: #ffeaea;
+        }
+        td {
+            font-size: 1.05em;
+            color: #111;
+        }
+        .arrow-cell {
+            width: 40px;
+            text-align: right;
+            padding-right: 1.2em;
+        }
+        .dropdown-row {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .dropdown-row:hover, .dropdown-row.open {
+            background: #ffd6d6 !important;
+        }
+        .dropdown-arrow {
+            display: inline-block;
+            margin-left: 8px;
+            transition: transform 0.2s, color 0.2s;
+            color: #b30000;
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+        .dropdown-row.open .dropdown-arrow {
+            transform: rotate(180deg);
+            color: #fff;
+            background: #b30000;
+            border-radius: 50%;
+            padding: 2px 6px;
+        }
+        .dropdown-content {
+            display: none;
+            background: #fff6f6;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+        .dropdown-row.open + .dropdown-content {
+            display: table-row;
+        }
+        .dropdown-details {
+            padding: 1em 2em;
+            text-align: left;
+            color: #222;
+        }
+        .dropdown-details ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 0.5em 0;
+        }
+        .dropdown-details li {
+            margin-bottom: 0.3em;
+        }
+        .footer {
+            margin-top: 2em;
+            padding: 1.2em 0 1em 0;
+            background: #b30000;
+            color: #fff;
+            text-align: center;
+            border-radius: 0 0 18px 18px;
+            font-size: 1em;
+            letter-spacing: 1px;
+        }
+        @media (max-width: 900px) {
+            .container { padding: 0.5em; }
+            table, th, td { font-size: 0.95em; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 0.2em; }
+            table { font-size: 0.9em; }
+            th, td { padding: 0.5em 0.2em; }
+            .dropdown-details { padding: 0.7em 0.2em; }
+            .logo img { height: 60px; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 0; }
+            table { font-size: 0.85em; }
+            th, td { padding: 0.3em 0.1em; }
+            .dropdown-details { padding: 0.5em 0.1em; }
+            .logo img { height: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="{% static 'sweepstake/images/fingallians_logo.png' %}" alt="Fingallians GAA Logo" />
+        </div>
+        <h1>Golf Sweepstake Leaderboard</h1>
+        <div style="text-align:center; margin-top:-1em; margin-bottom:2em; font-size:1.2em; color:#b30000; opacity:0.85; font-weight:500; letter-spacing:0.5px;">The Open 2025</div>
+        <div class="table-responsive">
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Contestant</th>
+                <th>Combined Score</th>
+                <th></th>
+            </tr>
+            {% for item in ranked %}
+            <tr class="dropdown-row">
+                <td>{{ item.rank }}</td>
+                <td>{{ item.entry.contestant.name }}</td>
+                <td style="font-weight:600;">{{ item.entry.combined_score }}</td>
+                <td class="arrow-cell"><span class="dropdown-arrow">&#9660;</span></td>
+            </tr>
+            <tr class="dropdown-content">
+                <td colspan="4">
+                    <div class="dropdown-details">
+                        <strong>Picks:</strong>
+                        <ul>
+                        {% for pick in item.entry.picks %}
+                            <li>{{ pick.player.name }} ({{ pick.player.odds }})</li>
+                        {% endfor %}
+                        </ul>
+                        <strong>Combined Odds:</strong> {{ item.combined_odds }}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% for entry in unranked %}
+            <tr class="dropdown-row">
+                <td>-</td>
+                <td>{{ entry.contestant.name }}</td>
+                <td>Incomplete Picks</td>
+                <td class="arrow-cell"><span class="dropdown-arrow">&#9660;</span></td>
+            </tr>
+            <tr class="dropdown-content">
+                <td colspan="4">
+                    <div class="dropdown-details">
+                        <strong>Picks:</strong>
+                        <ul>
+                        {% for pick in entry.picks %}
+                            <li>{{ pick.player.name }} ({{ pick.player.odds }})</li>
+                        {% endfor %}
+                        </ul>
+                        <strong>Combined Odds:</strong> -
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        </div>
+        <div class="footer">
+            &copy; {{ now|date:"Y" }} Golf Fundraiser Sweepstake &mdash; Developed by Darragh Foley
+        </div>
+    </div>
+    <script>
+        // Dropdown logic
+        document.querySelectorAll('.dropdown-row').forEach(function(row) {
+            row.addEventListener('click', function() {
+                // Close all others
+                document.querySelectorAll('.dropdown-row').forEach(function(r) {
+                    if (r !== row) r.classList.remove('open');
+                });
+                // Toggle this one
+                row.classList.toggle('open');
+            });
+            row.addEventListener('touchstart', function() {
+                row.classList.add('hover');
+            });
+            row.addEventListener('touchend', function() {
+                row.classList.remove('hover');
+            });
+            row.addEventListener('mouseover', function() {
+                row.classList.add('hover');
+            });
+            row.addEventListener('mouseout', function() {
+                row.classList.remove('hover');
+            });
+        });
+        // Only toggle when clicking the arrow cell
+        document.querySelectorAll('.arrow-cell').forEach(function(cell) {
+            cell.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var row = cell.parentElement;
+                document.querySelectorAll('.dropdown-row').forEach(function(r) {
+                    if (r !== row) r.classList.remove('open');
+                });
+                row.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html> 

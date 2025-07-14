@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Home - Golf Sweepstake</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .header { background: #222; color: #fff; padding: 1em; border-radius: 8px; margin-bottom: 2em; }
+        .header a { color: #fff; margin-right: 2em; text-decoration: underline; font-weight: bold; }
+        table { border-collapse: collapse; width: 80%; margin: auto; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background: #f0f0f0; }
+        h1, h2 { text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Golf Sweepstake Admin</h1>
+        <div style="text-align:center;">
+            <a href="{% url 'admin_home' %}">Admin Home</a>
+            <a href="{% url 'leaderboard' %}">Public Leaderboard</a>
+            <a href="{% url 'update_scores' %}">Update Scores</a>
+            <a href="{% url 'import_excel' %}">Import Excel</a>
+            <a href="{% url 'reset_leaderboard' %}">Reset Leaderboard</a>
+            <a href="{% url 'reset_players' %}">Reset Golfers</a>
+            <a href="/admin/">Django Admin</a>
+        </div>
+    </div>
+    <h2>Current Leaderboard</h2>
+    <table>
+        <tr>
+            <th>Rank</th>
+            <th>Entry #</th>
+            <th>Contestant</th>
+            <th>Picks</th>
+            <th>Combined Score</th>
+        </tr>
+        {% for entry in ranked %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ entry.entry_number }}</td>
+            <td>{{ entry.contestant.name }}</td>
+            <td>
+                <ul style="list-style:none; padding:0; margin:0;">
+                {% for pick in entry.picks %}
+                    <li>{{ pick.player.name }} ({{ pick.player.odds }}) - Score: {{ pick.player.current_score }}</li>
+                {% endfor %}
+                </ul>
+            </td>
+            <td>{{ entry.combined_score }}</td>
+        </tr>
+        {% endfor %}
+        {% for entry in unranked %}
+        <tr>
+            <td>-</td>
+            <td>{{ entry.entry_number }}</td>
+            <td>{{ entry.contestant.name }}</td>
+            <td>
+                <ul style="list-style:none; padding:0; margin:0;">
+                {% for pick in entry.picks %}
+                    <li>{{ pick.player.name }} ({{ pick.player.odds }}) - Score: {{ pick.player.current_score }}</li>
+                {% endfor %}
+                </ul>
+            </td>
+            <td>Incomplete Picks</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html> 

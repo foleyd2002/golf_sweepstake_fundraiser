@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Player Scores</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        table { border-collapse: collapse; width: 60%; margin: auto; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background: #f0f0f0; }
+        h1 { text-align: center; }
+        .center { text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Update Player Scores</h1>
+    <form method="post">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <th>Player</th>
+                <th>Odds</th>
+                <th>Current Score</th>
+            </tr>
+            {% for player in players %}
+            <tr>
+                <td>{{ player.name }}</td>
+                <td>{{ player.odds }}</td>
+                <td>
+                    <input type="number" name="score_{{ player.id }}" value="{{ player.current_score }}" style="width: 60px;">
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div class="center" style="margin-top: 1em;">
+            <button type="submit">Save Scores</button>
+        </div>
+    </form>
+    <div class="center" style="margin-top: 2em;">
+        <a href="{% url 'leaderboard' %}">Back to Leaderboard</a>
+    </div>
+</body>
+</html> 
