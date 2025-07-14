@@ -172,14 +172,19 @@
             </tr>
             <tr class="dropdown-content">
                 <td colspan="4">
-                    <div class="dropdown-details">
-                        <strong>Picks:</strong>
-                        <ul>
-                        {% for pick in item.entry.picks %}
-                            <li>{{ pick.player.name }} ({{ pick.player.odds }})</li>
-                        {% endfor %}
-                        </ul>
-                        <strong>Combined Odds:</strong> {{ item.combined_odds }}
+                    <div class="dropdown-details" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 2em;">
+                        <div>
+                            <strong>Picks:</strong>
+                            <ul>
+                            {% for pick in item.entry.picks %}
+                                <li>{{ pick.player.name }} ({{ pick.player.odds }})</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                        <div style="min-width: 120px; text-align: right;">
+                            <strong>Combined Odds:</strong><br>
+                            {{ item.combined_odds }}
+                        </div>
                     </div>
                 </td>
             </tr>
