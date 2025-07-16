@@ -20,17 +20,44 @@
                 <th>Player</th>
                 <th>Odds</th>
                 <th>Current Score</th>
+                <th>Missed Cut</th>
             </tr>
             {% for player in players %}
-            <tr>
+            <tr id="row-{{ player.id }}">
                 <td>{{ player.name }}</td>
                 <td>{{ player.odds }}</td>
                 <td>
-                    <input type="number" name="score_{{ player.id }}" value="{{ player.current_score }}" style="width: 60px;">
+                    <input type="number" name="score_{{ player.id }}" id="score_{{ player.id }}" value="{{ player.current_score }}" style="width: 60px;">
+                </td>
+                <td>
+                    <button type="button" id="missed-cut-btn-{{ player.id }}" style="background: #ffdddd; color: #b00; border: 1px solid #b00; padding: 4px 10px; border-radius: 4px; cursor: pointer;" onclick="toggleMissedCut({{ player.id }}, {{ player.current_score }})">Missed Cut</button>
                 </td>
             </tr>
             {% endfor %}
         </table>
+        <script>
+        function toggleMissedCut(playerId, originalScore) {
+            var scoreInput = document.getElementById('score_' + playerId);
+            var row = document.getElementById('row-' + playerId);
+            var btn = document.getElementById('missed-cut-btn-' + playerId);
+            var missed = row.getAttribute('data-missed-cut') === 'true';
+            if (!missed) {
+                // Add +10, highlight row, set state
+                var currentScore = parseInt(scoreInput.value) || 0;
+                scoreInput.value = currentScore + 10;
+                row.style.backgroundColor = '#ffe5e5';
+                btn.textContent = 'Undo Missed Cut';
+                row.setAttribute('data-missed-cut', 'true');
+            } else {
+                // Remove +10, remove highlight, set state
+                var currentScore = parseInt(scoreInput.value) || 0;
+                scoreInput.value = currentScore - 10;
+                row.style.backgroundColor = '';
+                btn.textContent = 'Missed Cut';
+                row.setAttribute('data-missed-cut', 'false');
+            }
+        }
+        </script>
         <div class="center" style="margin-top: 1em;">
             <button type="submit">Save Scores</button>
         </div>
