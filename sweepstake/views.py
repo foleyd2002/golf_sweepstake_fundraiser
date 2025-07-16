@@ -23,7 +23,7 @@ def assign_tied_ranks(ranked):
         ranked_with_ranks.append({'rank': rank, 'entry': entry, 'combined_odds': entry['combined_odds']})
         prev_score = entry['combined_score']
         prev_odds = entry['combined_odds_val']
-    return ranked_with_ranks
+    return ranked_with_ranks 
 
 def leaderboard(request):
     from math import prod
@@ -31,7 +31,7 @@ def leaderboard(request):
     @cache_page(120)
     def cached_leaderboard(request):
         contestants = []
-        # Use prefetch_related for picks and select_related for player
+        # Use prefetch_related for picks and select_related for players
         for contestant in Contestant.objects.prefetch_related('picks__player').all():
             picks = list(contestant.picks.all())
             if len(picks) == 3:
