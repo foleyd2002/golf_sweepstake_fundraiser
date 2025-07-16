@@ -172,6 +172,7 @@ def reset_players(request):
         return redirect('admin_home')
     return render(request, 'sweepstake/reset_players.html')
 
+@staff_member_required
 def admin_home(request):
     # Only accessible to staff/superuser
     contestants = []
