@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Import Golfer Scores from Excel</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .center { text-align: center; }
+        form { margin: 2em auto; width: 400px; padding: 2em; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; }
+        input[type=file] { margin-bottom: 1em; }
+        button { padding: 0.5em 2em; border: none; border-radius: 4px; background: #007bff; color: #fff; }
+        a { margin: 0 1em; }
+    </style>
+</head>
+<body>
+    <h1 class="center">Import Golfer Scores from Excel</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="excel_file" accept=".xlsx,.xls" required><br>
+        <button type="submit">Upload & Update Scores</button>
+    </form>
+    <div class="center" style="margin-top: 2em;">
+        <a href="{% url 'admin_home' %}">Back to Admin Home</a> |
+        <a href="{% url 'leaderboard' %}">Leaderboard</a>
+    </div>
+    <div class="center" style="margin-top: 2em; color: #555;">
+        <strong>Excel format:</strong> Column A: Golfer, Column B: Score (first row = header)
+    </div>
+</body>
+</html> 

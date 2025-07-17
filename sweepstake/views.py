@@ -160,6 +160,34 @@ def reset_leaderboard(request):
         return redirect('leaderboard')
     return render(request, 'sweepstake/reset_leaderboard.html')
 
+@staff_member_required
+def import_scores_excel(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        from openpyxl import load_workbook
+        excel_file = request.FILES['excel_file']
+        wb = load_workbook(excel_file)
+        ws = wb.active
+        # Collect updates in bulk
+        name_to_score = {}
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            golfer_name = row[0]
+            score = row[1]
+            if not golfer_name or score is None:
+                continue
+            name_to_score[str(golfer_name).strip().lower()] = int(score)
+        # Fetch all relevant players in one query
+        players = Player.objects.filter(name__in=[k for k in name_to_score.keys()])
+        updated = 0
+        for player in players:
+            key = player.name.strip().lower()
+            if key in name_to_score:
+                player.current_score = name_to_score[key]
+                updated += 1
+        Player.objects.bulk_update(players, ['current_score'])
+        messages.success(request, f"Updated {updated} golfer scores from Excel.")
+        return redirect('leaderboard')
+    return render(request, 'sweepstake/import_scores_excel.html')
+
 def superuser_required(view_func):
     from django.contrib.auth.decorators import user_passes_test
     return user_passes_test(lambda u: u.is_active and u.is_superuser)(view_func)
