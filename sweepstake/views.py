@@ -164,26 +164,40 @@ def reset_leaderboard(request):
 def import_scores_excel(request):
     if request.method == 'POST' and request.FILES.get('excel_file'):
         from openpyxl import load_workbook
+        from django.db.models.functions import Lower
         excel_file = request.FILES['excel_file']
         wb = load_workbook(excel_file)
         ws = wb.active
-        # Collect updates in bulk
-        name_to_score = {}
+
+        # Step 1: Collect all normalized names from Excel
+        excel_rows = []
+        excel_names = set()
         for row in ws.iter_rows(min_row=2, values_only=True):
             golfer_name = row[0]
             score = row[1]
             if not golfer_name or score is None:
                 continue
-            name_to_score[str(golfer_name).strip().lower()] = int(score)
-        # Fetch all relevant players in one query
-        players = Player.objects.filter(name__in=[k for k in name_to_score.keys()])
+            norm_name = str(golfer_name).strip().lower()
+            excel_rows.append((norm_name, int(score)))
+            excel_names.add(norm_name)
+
+        # Step 2: Query only needed players (case-insensitive)
+        players = Player.objects.annotate(norm_name=Lower('name')).filter(norm_name__in=excel_names)
+        player_dict = {p.name.strip().lower(): p for p in players}
+
+        # Step 3: Update scores
+        to_update = []
         updated = 0
-        for player in players:
-            key = player.name.strip().lower()
-            if key in name_to_score:
-                player.current_score = name_to_score[key]
+        for norm_name, score in excel_rows:
+            player = player_dict.get(norm_name)
+            if player:
+                player.current_score = score
+                to_update.append(player)
                 updated += 1
-        Player.objects.bulk_update(players, ['current_score'])
+
+        if to_update:
+            Player.objects.bulk_update(to_update, ['current_score'])
+
         messages.success(request, f"Updated {updated} golfer scores from Excel.")
         return redirect('leaderboard')
     return render(request, 'sweepstake/import_scores_excel.html')
